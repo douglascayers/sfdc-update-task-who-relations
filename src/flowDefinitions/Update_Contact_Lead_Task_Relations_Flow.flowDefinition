@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <activeVersionNumber>5</activeVersionNumber>
+    <description>Example of Flow that updates Contacts or Leads related to a Task via TaskWhoRelation object when &quot;Shared Activities&quot; setting is enabled.</description>
+    <masterLabel>Update Contact/Lead Task Relations Flow</masterLabel>
+</FlowDefinition>
