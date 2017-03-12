@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldSets>
+        <fullName>Task_Event_Who_Relation_Flow_Fields</fullName>
+        <description>In the &quot;Update Contact/Lead Task Relations Flow&quot; and &quot;Update Contact/Lead Event Relations Flow&quot; flows, this defines the fields on the Contact/Lead to query and be available within the flows for things like Decision criteria or assigning to other variables.</description>
+        <displayedFields>
+            <field>LastName</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>FirstName</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Name</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <displayedFields>
+            <field>Salutation</field>
+            <isFieldManaged>false</isFieldManaged>
+            <isRequired>false</isRequired>
+        </displayedFields>
+        <label>Task Event Who Relation Flow Fields</label>
+    </fieldSets>
+</CustomObject>

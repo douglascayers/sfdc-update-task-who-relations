@@ -2,11 +2,11 @@
  * Developed by Doug Ayers
  * github.com/douglascayers
  */
-public class GetTaskWhoRelationSObjectsInvocable {
+public class GetEventWhoRelationSObjectsInvocable {
 
     @InvocableMethod(
         label = 'Get Contact/Lead SObject Collections'
-        description = 'Separates TaskRelations into two lists: one of Contacts and one of Leads.'
+        description = 'Separates EventRelations into two lists: one of Contacts and one of Leads.'
     )
     public static List<Response> execute( List<Request> requests ) {
 
@@ -23,7 +23,7 @@ public class GetTaskWhoRelationSObjectsInvocable {
 
         for ( Request req : requests ) {
 
-            for ( TaskRelation relation : req.relations ) {
+            for ( EventRelation relation : req.relations ) {
 
                 String relationKeyPrefix = String.valueOf( relation.relationId ).left( 3 );
 
@@ -106,7 +106,7 @@ public class GetTaskWhoRelationSObjectsInvocable {
             res.contacts = new List<Contact>();
             res.leads = new List<Lead>();
 
-            for ( TaskRelation relation : req.relations ) {
+            for ( EventRelation relation : req.relations ) {
 
                 String relationKeyPrefix = String.valueOf( relation.relationId ).left( 3 );
 
@@ -158,18 +158,18 @@ public class GetTaskWhoRelationSObjectsInvocable {
 
     public class Request {
 
-        // Ideally, I wanted this to be list of TaskWhoRelation object
+        // Ideally, I wanted this to be list of EventWhoRelation object
         // since that's pre-filtered to just Contacts and Leads
         // but that was impossible to unit test because that data
         // is inserted asynchronously by Salesforce and the sobject
         // fields were not writeable in apex.
 
         @InvocableVariable(
-            label = 'Task Relations'
-            description = 'SObject Collection of TaskRelation records.'
+            label = 'Event Relations'
+            description = 'SObject Collection of EventRelation records.'
             required = true
         )
-        public List<TaskRelation> relations;
+        public List<EventRelation> relations;
 
     }
 
