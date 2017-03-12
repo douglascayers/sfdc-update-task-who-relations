@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Since Flow has limitation that we cannot create new sobject variables AND assign the ID field value, to avoid making Record Update calls within a loop (bad practice, not bulk friendly) we use this custom invocable action, &quot;GetTaskWhoRelationSObjectsInvocable&quot;, to define the Contacts and Leads sobject collections. http://salesforce.stackexchange.com/questions/153777/in-flow-how-to-assign-id-field-to-sobject-variables-to-build-sobject-collection/153779</description>
+        <name>Get_Contact_Lead_SObject_Collections</name>
+        <label>Get Contact/Lead SObject Collections</label>
+        <locationX>232</locationX>
+        <locationY>32</locationY>
+        <actionName>GetTaskWhoRelationSObjectsInvocable</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Related_to_Contacts</targetReference>
+        </connector>
+        <inputParameters>
+            <name>relations</name>
+            <value>
+                <elementReference>varTaskRelations</elementReference>
+            </value>
+        </inputParameters>
+        <outputParameters>
+            <assignToReference>varContacts</assignToReference>
+            <name>contacts</name>
+        </outputParameters>
+        <outputParameters>
+            <assignToReference>varLeads</assignToReference>
+            <name>leads</name>
+        </outputParameters>
+    </actionCalls>
+    <assignments>
+        <description>When doing field updates to sobjects then doing a Fast Update then the individual sobjects must be added to a new sobject collection different from the source collection they came from. So, we cannot use &apos;varContacts&apos; which came from the invocable apex but rather a new collection &apos;varContactsToUpdate&apos;. http://salesforce.stackexchange.com/questions/93791/how-to-add-sobject-to-an-sobject-collection-in-visual-flow/93792</description>
+        <name>Add_to_Contacts_to_Update</name>
+        <label>Add to Contacts to Update</label>
+        <locationX>317</locationX>
+        <locationY>427</locationY>
+        <assignmentItems>
+            <assignToReference>varContactsToUpdate</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varContact</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Contacts</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>When doing field updates to sobjects then doing a Fast Update then the individual sobjects must be added to a new sobject collection different from the source collection they came from. So, we cannot use &apos;varLeads&apos; which came from the invocable apex but rather a new collection &apos;varLeadsToUpdate&apos;. http://salesforce.stackexchange.com/questions/93791/how-to-add-sobject-to-an-sobject-collection-in-visual-flow/93792</description>
+        <name>Add_to_Leads_to_Update</name>
+        <label>Add to Leads to Update</label>
+        <locationX>776</locationX>
+        <locationY>427</locationY>
+        <assignmentItems>
+            <assignToReference>varLeadsToUpdate</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>varLead</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Leads</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Applies field updates to each Contact in the loop. Make any desired adjustments here. This example simply updates the Contact&apos;s description field.</description>
+        <name>Set_Contact_Fields</name>
+        <label>Set Contact Fields</label>
+        <locationX>151</locationX>
+        <locationY>427</locationY>
+        <assignmentItems>
+            <assignToReference>varContact.Description</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Has been related to a Task.</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Add_to_Contacts_to_Update</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Applies field updates to each Lead in the loop. Make any desired adjustments here. This example simply updates the Lead&apos;s description field.</description>
+        <name>Set_Lead_Fields</name>
+        <label>Set Lead Fields</label>
+        <locationX>610</locationX>
+        <locationY>427</locationY>
+        <assignmentItems>
+            <assignToReference>varLead.Description</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Has been related to a Task.</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Add_to_Leads_to_Update</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Determine if there were any Contacts related to the Task.</description>
+        <name>Related_to_Contacts</name>
+        <label>Related to Contacts?</label>
+        <locationX>232</locationX>
+        <locationY>144</locationY>
+        <defaultConnectorLabel>[Default Outcome]</defaultConnectorLabel>
+        <rules>
+            <name>Related_to_Contacts_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varContacts</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_Contacts</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+        <rules>
+            <name>Related_to_Contacts_No</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varContacts</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Related_to_Leads</targetReference>
+            </connector>
+            <label>No</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Determine if there were any Leads related to the Task.</description>
+        <name>Related_to_Leads</name>
+        <label>Related to Leads?</label>
+        <locationX>686</locationX>
+        <locationY>143</locationY>
+        <defaultConnectorLabel>[Default Outcome]</defaultConnectorLabel>
+        <rules>
+            <name>Related_to_Leads_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varLeads</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_Leads</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+        <rules>
+            <name>Related_to_Leads_No</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varLeads</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>No</label>
+        </rules>
+    </decisions>
+    <description>Example of Flow that updates Contacts or Leads related to a Task via TaskWhoRelation object when &quot;Shared Activities&quot; setting is enabled.</description>
+    <interviewLabel>Update Contact/Lead Task Relations Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update Contact/Lead Task Relations Flow</label>
+    <loops>
+        <name>Loop_Contacts</name>
+        <label>Loop Contacts</label>
+        <locationX>231</locationX>
+        <locationY>283</locationY>
+        <assignNextValueToReference>varContact</assignNextValueToReference>
+        <collectionReference>varContacts</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Set_Contact_Fields</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_Contacts</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>Loop_Leads</name>
+        <label>Loop Leads</label>
+        <locationX>687</locationX>
+        <locationY>279</locationY>
+        <assignNextValueToReference>varLead</assignNextValueToReference>
+        <collectionReference>varLeads</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Set_Lead_Fields</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_Leads</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Query for all TaskRelation records related to the Task. This represents any Contacts or Leads related to the Task when &quot;Shared Activities&quot; is enabled in Setup | Activity Settings. Ideally, I would have preferred to query the pre-filtered list of TaskWhoRelation (as that&apos;s exactly what we want) but using that object was impossible to unit test in apex.</description>
+        <name>Get_Task_Relations</name>
+        <label>Get Task Relations</label>
+        <locationX>35</locationX>
+        <locationY>30</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Contact_Lead_SObject_Collections</targetReference>
+        </connector>
+        <filters>
+            <field>IsWhat</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>TaskId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varTask.Id</elementReference>
+            </value>
+        </filters>
+        <object>TaskRelation</object>
+        <outputReference>varTaskRelations</outputReference>
+        <queriedFields>RelationId</queriedFields>
+        <queriedFields>TaskId</queriedFields>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+    <recordUpdates>
+        <description>When doing field updates to sobjects then doing a Fast Update then the individual sobjects must be added to a new sobject collection different from the source collection they came from. So, we cannot use &apos;varContacts&apos; which came from the invocable apex but rather a new collection &apos;varContactsToUpdate&apos;. http://salesforce.stackexchange.com/questions/93791/how-to-add-sobject-to-an-sobject-collection-in-visual-flow/93792</description>
+        <name>Update_Contacts</name>
+        <label>Update Contacts</label>
+        <locationX>452</locationX>
+        <locationY>282</locationY>
+        <connector>
+            <targetReference>Related_to_Leads</targetReference>
+        </connector>
+        <inputReference>varContactsToUpdate</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>When doing field updates to sobjects then doing a Fast Update then the individual sobjects must be added to a new sobject collection different from the source collection they came from. So, we cannot use &apos;varLeads&apos; which came from the invocable apex but rather a new collection &apos;varLeadsToUpdate&apos;. http://salesforce.stackexchange.com/questions/93791/how-to-add-sobject-to-an-sobject-collection-in-visual-flow/93792</description>
+        <name>Update_Leads</name>
+        <label>Update Leads</label>
+        <locationX>901</locationX>
+        <locationY>278</locationY>
+        <inputReference>varLeadsToUpdate</inputReference>
+    </recordUpdates>
+    <startElementReference>Get_Task_Relations</startElementReference>
+    <variables>
+        <name>varContact</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Contact</objectType>
+    </variables>
+    <variables>
+        <name>varContacts</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Contact</objectType>
+    </variables>
+    <variables>
+        <name>varContactsToUpdate</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Contact</objectType>
+    </variables>
+    <variables>
+        <name>varLead</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Lead</objectType>
+    </variables>
+    <variables>
+        <name>varLeads</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Lead</objectType>
+    </variables>
+    <variables>
+        <name>varLeadsToUpdate</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Lead</objectType>
+    </variables>
+    <variables>
+        <name>varTask</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Task</objectType>
+    </variables>
+    <variables>
+        <description>All of the Contacts, Leads, etc. related to the Task. Ideally, I would have preferred to query the pre-filtered list of TaskWhoRelation (as that&apos;s exactly what we want) but using that object was impossible to unit test in apex.</description>
+        <name>varTaskRelations</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>TaskRelation</objectType>
+    </variables>
+</Flow>
