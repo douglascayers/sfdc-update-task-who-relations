@@ -13,6 +13,13 @@
         <name>FieldSet</name>
     </types>
     <types>
+        <members>Update_Contact_Lead_Event_Relations-1</members>
+        <members>Update_Contact_Lead_Event_Relations_Flow-2</members>
+        <members>Update_Contact_Lead_Task_Relations-2</members>
+        <members>Update_Contact_Lead_Task_Relations_Flow-5</members>
+        <name>Flow</name>
+    </types>
+    <types>
         <members>Update_Contact_Lead_Event_Relations</members>
         <members>Update_Contact_Lead_Event_Relations_Flow</members>
         <members>Update_Contact_Lead_Task_Relations</members>
